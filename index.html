@@ -1,50 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Shop Money Tracker</title>
+  <title>Money Management App</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { font-family: Arial, sans-serif; background: #f2f6ff; padding: 10px; }
-    h2 { text-align: center; color: #1976D2; }
-    /* The Save Button Style */
-    .save-btn {
-      display: block; width: 100%; max-width: 400px; margin: 15px auto; padding: 15px;
-      background: #2E7D32; color: white; border: none; border-radius: 8px;
-      font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-    .save-btn:active { background: #1B5E20; transform: scale(0.98); }
-    
+    body { font-family: Arial, background: #f2f6ff; padding: 10px; }
+    h2 { text-align: center; }
     .tabs { text-align: center; margin-bottom: 10px; }
-    .tabs button { padding: 10px 15px; margin: 4px; border: none; background: #1976D2; color: white; cursor: pointer; border-radius: 4px; }
-    table { width: 100%; border-collapse: collapse; background: #fff; margin-bottom: 10px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    .tabs button {
+      padding: 8px 12px; margin: 4px; border: none;
+      background: #1976D2; color: white; cursor: pointer; border-radius: 4px;
+    }
+    /* STYLE FOR YOUR NEW SAVE BUTTON */
+    .save-main-btn {
+      display: block; width: 100%; max-width: 300px; margin: 10px auto; padding: 15px;
+      background: #2E7D32; color: white; border: none; border-radius: 8px;
+      font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    table { width: 100%; border-collapse: collapse; background: #fff; }
+    th, td { border: 1px solid #ccc; padding: 6px; text-align: center; }
     th { background: #2196F3; color: #000; }
-    th input { background: transparent; border: none; width: 100%; text-align: center; font-weight: bold; }
-    td input { width: 100%; border: none; text-align: center; padding: 5px; }
+    th input { background: transparent; border: none; width: 100%; text-align: center; font-weight: bold; color: #000; }
+    td input { width: 100%; border: none; text-align: center; }
     .sheet { display: none; }
     .active { display: block; }
-    .controls { margin: 8px 0; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-    .controls button { background: #1976D2; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; }
-    .danger { background: #f44336 !important; }
-    .total { text-align: right; margin-top: 8px; font-size: 18px; font-weight: bold; }
+    .controls { margin: 8px 0; display: flex; gap: 8px; flex-wrap: wrap; }
+    .controls button { background: #4CAF50; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
+    .danger { background: #f44336; }
+    .total { text-align: right; margin-top: 8px; font-size: 16px; font-weight: bold; }
   </style>
 </head>
 <body>
 
-<h2>💰 Shop Money Tracker</h2>
+<h2>💰 Money Management App</h2>
 
-<button class="save-btn" id="saveBtn">💾 SAVE TO DATABASE</button>
+<button class="save-main-btn" id="masterSave">💾 SAVE DATA TO CLOUD</button>
 
 <div class="tabs">
-  <button onclick="openSheet('s1')">Shop 1</button>
-  <button onclick="openSheet('s2')">Shop 2</button>
-  <button onclick="openSheet('s3')">Shop 3</button>
+  <button onclick="openSheet('s1')">Sheet 1</button>
+  <button onclick="openSheet('s2')">Sheet 2</button>
+  <button onclick="openSheet('s3')">Sheet 3</button>
 </div>
 
 <div id="s1" class="sheet active">
   <div class="controls">
     <button onclick="addRow('t1')">➕ Add Row</button>
-    <button class="danger" onclick="deleteLastRow('t1')">🗑️ Delete Row</button>
+    <button onclick="addCol('t1')">➕ Add Column</button>
+    <button class="danger" onclick="deleteLastRow('t1')">🗑️ Delete Last Row</button>
   </div>
   <table id="t1">
     <tr>
@@ -57,34 +59,4 @@
 </div>
 
 <div id="s2" class="sheet">
-  <div class="controls"><button onclick="addRow('t2')">➕ Add Row</button></div>
-  <table id="t2"><tr><th><input value="Date"></th><th><input value="Description"></th><th><input value="Amount"></th></tr></table>
-  <div class="total">Total: ₹ <span id="total-t2">0</span></div>
-</div>
-
-<div id="s3" class="sheet">
-  <div class="controls"><button onclick="addRow('t3')">➕ Add Row</button></div>
-  <table id="t3"><tr><th><input value="Date"></th><th><input value="Description"></th><th><input value="Amount"></th></tr></table>
-  <div class="total">Total: ₹ <span id="total-t3">0</span></div>
-</div>
-
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyANPkFEq2XbG_RQM3oZbBRRANwNHiddQbA",
-    authDomain: "guruprasanth-moneymanage-81109.firebaseapp.com",
-    projectId: "guruprasanth-moneymanage-81109",
-    storageBucket: "guruprasanth-moneymanage-81109.firebasestorage.app",
-    messagingSenderId: "85301921796",
-    appId: "1:85301921796:web:2a13ef0aa7159053dacd51"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  // THE ACTION: What happens when you click "SAVE TO DATABASE"
-  document.getElementById('saveBtn').onclick = async () => {
-    const btn = document.getElementById('saveBtn');
-    btn.innerText = "⌛
+  <div class="controls">
