@@ -1,62 +1,201 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html>
 <head>
-  <title>Money Management App</title>
+  <title>Sowndharya Shop Manager</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { font-family: Arial, background: #f2f6ff; padding: 10px; }
-    h2 { text-align: center; }
-    .tabs { text-align: center; margin-bottom: 10px; }
-    .tabs button {
-      padding: 8px 12px; margin: 4px; border: none;
-      background: #1976D2; color: white; cursor: pointer; border-radius: 4px;
-    }
-    /* STYLE FOR YOUR NEW SAVE BUTTON */
-    .save-main-btn {
-      display: block; width: 100%; max-width: 300px; margin: 10px auto; padding: 15px;
-      background: #2E7D32; color: white; border: none; border-radius: 8px;
-      font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-    table { width: 100%; border-collapse: collapse; background: #fff; }
-    th, td { border: 1px solid #ccc; padding: 6px; text-align: center; }
-    th { background: #2196F3; color: #000; }
-    th input { background: transparent; border: none; width: 100%; text-align: center; font-weight: bold; color: #000; }
-    td input { width: 100%; border: none; text-align: center; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; margin: 0; padding: 10px; }
+    #login-screen { text-align: center; margin-top: 50px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 300px; margin-left: auto; margin-right: auto; }
+    #app-content { display: none; }
+    h2 { text-align: center; color: #1565C0; }
+    .tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; margin-bottom: 15px; }
+    .tabs button { padding: 10px; border: none; background: #bbdefb; border-radius: 5px; cursor: pointer; font-weight: bold; }
+    .tabs button.active { background: #1976D2; color: white; }
+    .save-header { position: sticky; top: 0; background: #f0f4f8; padding: 10px 0; z-index: 100; text-align: center; }
+    .save-btn { background: #2E7D32; color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; max-width: 400px; }
+    table { width: 100%; border-collapse: collapse; background: white; margin-bottom: 15px; font-size: 14px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+    th { background: #2196F3; color: white; }
+    td input { width: 100%; border: none; text-align: center; padding: 5px; outline: none; }
+    .controls { margin-bottom: 10px; text-align: center; }
+    .controls button { padding: 5px 10px; margin: 2px; border: none; border-radius: 3px; cursor: pointer; background: #e3f2fd; }
     .sheet { display: none; }
-    .active { display: block; }
-    .controls { margin: 8px 0; display: flex; gap: 8px; flex-wrap: wrap; }
-    .controls button { background: #4CAF50; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
-    .danger { background: #f44336; }
-    .total { text-align: right; margin-top: 8px; font-size: 16px; font-weight: bold; }
+    .sheet.active { display: block; }
+    .total-box { text-align: right; font-weight: bold; padding: 10px; background: #e8f5e9; border-radius: 5px; margin-top: 5px; }
   </style>
 </head>
 <body>
 
-<h2>💰 Money Management App</h2>
-
-<button class="save-main-btn" id="masterSave">💾 SAVE DATA TO CLOUD</button>
-
-<div class="tabs">
-  <button onclick="openSheet('s1')">Sheet 1</button>
-  <button onclick="openSheet('s2')">Sheet 2</button>
-  <button onclick="openSheet('s3')">Sheet 3</button>
+<div id="login-screen">
+  <h3>🔒 Staff Login</h3>
+  <input type="text" id="user-id" placeholder="User ID" style="width: 100%; margin-bottom: 10px; padding: 8px;"><br>
+  <input type="password" id="user-pass" placeholder="Password" style="width: 100%; margin-bottom: 10px; padding: 8px;"><br>
+  <button onclick="checkLogin()" style="width: 100%; padding: 10px; background: #1976D2; color: white; border: none; border-radius: 5px;">Login</button>
 </div>
 
-<div id="s1" class="sheet active">
-  <div class="controls">
-    <button onclick="addRow('t1')">➕ Add Row</button>
-    <button onclick="addCol('t1')">➕ Add Column</button>
-    <button class="danger" onclick="deleteLastRow('t1')">🗑️ Delete Last Row</button>
+<div id="app-content">
+  <h2>📊 Office Management System</h2>
+  
+  <div class="save-header">
+    <button class="save-btn" id="saveBtn">💾 SAVE ALL DATA (SHOPS & STAFF)</button>
   </div>
-  <table id="t1">
-    <tr>
-      <th><input value="Date"></th>
-      <th><input value="Description"></th>
-      <th><input value="Amount"></th>
-    </tr>
-  </table>
-  <div class="total">Total: ₹ <span id="total-t1">0</span></div>
+
+  <div class="tabs" id="tabBar">
+    <button class="active" onclick="openSheet(event, 's1')">Shops Profit</button>
+    <button onclick="openSheet(event, 's2')">Closing Reports</button>
+    <button onclick="openSheet(event, 's3')">Debt (Borrowed)</button>
+    <button onclick="openSheet(event, 's4')">Receivables (Given)</button>
+    <button onclick="openSheet(event, 's5')">Mediator Sheet</button>
+    <button onclick="openSheet(event, 's6')">Attendance</button>
+  </div>
+
+  <div id="s1" class="sheet active">
+    <div class="controls"><button onclick="addRow('t1')">➕ Add Row</button></div>
+    <table id="t1">
+      <tr><th>Date</th><th>Shop Name</th><th>Profit (₹)</th></tr>
+    </table>
+    <div class="total-box">Total Profit: ₹ <span id="total-t1">0</span></div>
+  </div>
+
+  <div id="s2" class="sheet">
+    <div class="controls"><button onclick="addRow('t2')">➕ Add Row</button></div>
+    <table id="t2">
+      <tr><th>Date</th><th>Shop Name</th><th>Closing Note</th><th>Closing Cash</th></tr>
+    </table>
+  </div>
+
+  <div id="s3" class="sheet">
+    <div class="controls"><button onclick="addRow('t3')">➕ Add Row</button></div>
+    <table id="t3">
+      <tr><th>Person Name</th><th>Borrowed Amt</th><th>Paid</th><th>Balance</th></tr>
+    </table>
+  </div>
+
+  <div id="s4" class="sheet">
+    <div class="controls"><button onclick="addRow('t4')">➕ Add Row</button></div>
+    <table id="t4">
+      <tr><th>Person Name</th><th>Given Amt</th><th>Received</th><th>Balance</th></tr>
+    </table>
+  </div>
+
+  <div id="s5" class="sheet">
+    <div class="controls"><button onclick="addRow('t5')">➕ Add Row</button></div>
+    <table id="t5">
+      <tr><th>From Person</th><th>To Person</th><th>Amount</th><th>Status</th></tr>
+    </table>
+  </div>
+
+  <div id="s6" class="sheet">
+    <div class="controls"><button onclick="addRow('t6')">➕ Add Row</button></div>
+    <table id="t6">
+      <tr><th>Staff Name</th><th>Date</th><th>Attendance (P/A)</th></tr>
+    </table>
+  </div>
 </div>
 
-<div id="s2" class="sheet">
-  <div class="controls">
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyANPkFEq2XbG_RQM3oZbBRRANwNHiddQbA",
+    authDomain: "guruprasanth-moneymanage-81109.firebaseapp.com",
+    projectId: "guruprasanth-moneymanage-81109",
+    storageBucket: "guruprasanth-moneymanage-81109.firebasestorage.app",
+    messagingSenderId: "85301921796",
+    appId: "1:85301921796:web:2a13ef0aa7159053dacd51"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // LOGIN LOGIC
+  window.checkLogin = function() {
+    const id = document.getElementById('user-id').value;
+    const pass = document.getElementById('user-pass').value;
+    if(id === "admin" && pass === "1234") {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app-content').style.display = 'block';
+      loadAllData();
+    } else { alert("Wrong ID or Password!"); }
+  }
+
+  // SAVE LOGIC
+  document.getElementById('saveBtn').onclick = async () => {
+    const allData = {};
+    for(let i=1; i<=6; i++) { allData['t'+i] = getTableData('t'+i); }
+    try {
+      await setDoc(doc(db, "office_records", "main_data"), allData);
+      alert("✅ All Sheets Saved! Your brother can now refresh his screen to see them.");
+    } catch(e) { alert("Error: " + e.message); }
+  };
+
+  function getTableData(id) {
+    const table = document.getElementById(id);
+    let rows = [];
+    for (let i = 1; i < table.rows.length; i++) {
+      let rowData = [];
+      const inps = table.rows[i].querySelectorAll('input');
+      inps.forEach(inp => rowData.push(inp.value));
+      rows.push(rowData);
+    }
+    return rows;
+  }
+
+  // LOAD LOGIC
+  async function loadAllData() {
+    const docSnap = await getDoc(doc(db, "office_records", "main_data"));
+    if (docSnap.exists()) {
+      const d = docSnap.data();
+      for(let i=1; i<=6; i++) { if(d['t'+i]) fillTable('t'+i, d['t'+i]); }
+    }
+  }
+
+  function fillTable(id, data) {
+    data.forEach(rowData => {
+      const table = document.getElementById(id);
+      const row = table.insertRow();
+      rowData.forEach((val, idx) => {
+        const cell = row.insertCell();
+        const inp = document.createElement("input");
+        inp.value = val;
+        inp.oninput = () => calcTotals(id);
+        cell.appendChild(inp);
+      });
+    });
+    calcTotals(id);
+  }
+
+  window.addRow = function(id) {
+    const table = document.getElementById(id);
+    const row = table.insertRow();
+    const colCount = table.rows[0].cells.length;
+    for (let i = 0; i < colCount; i++) {
+      const cell = row.insertCell();
+      const inp = document.createElement("input");
+      inp.oninput = () => calcTotals(id);
+      cell.appendChild(inp);
+    }
+  }
+
+  function calcTotals(id) {
+    if(id !== 't1') return;
+    const table = document.getElementById(id);
+    let total = 0;
+    for(let i=1; i<table.rows.length; i++) {
+      const val = table.rows[i].cells[2].querySelector('input').value;
+      if(!isNaN(parseFloat(val))) total += parseFloat(val);
+    }
+    document.getElementById('total-t1').innerText = total;
+  }
+
+  window.openSheet = function(evt, sheetId) {
+    document.querySelectorAll('.sheet').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+    document.getElementById(sheetId).classList.add('active');
+    evt.currentTarget.classList.add('active');
+  }
+</script>
+
+</body>
+</html>
